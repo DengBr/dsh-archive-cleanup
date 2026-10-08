@@ -1,0 +1,46 @@
+# Publish dsh-archive-cleanup to npm from GitHub's network.
+#
+# Use this when the local network cannot complete `npm login` / `npm publish`
+# against registry.npmjs.org (the login endpoint times out, or PUTs are blocked).
+#
+# Setup:
+#   1. Create a Granular Access Token at
+#      https://www.npmjs.com/settings/<you>/tokens
+#      Permissions: Read and write. Packages: all, or just dsh-archive-cleanup.
+#      Tick "Bypass two-factor authentication" unless you want to pass --otp.
+#   2. Repo -> Settings -> Secrets and variables -> Actions -> New repository
+#      secret, name it NPM_TOKEN, paste the token.
+#   3. Put this file at .github/workflows/publish.yml and push it.
+#   4. Actions -> publish-npm -> Run workflow.
+#
+# The token is read from the secret only; it is never written to the repo.
+
+name: publish-npm
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # npm provenance attestation
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Run the test suite
+        run: npm test
+
+      - name: Publish
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
