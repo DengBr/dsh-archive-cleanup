@@ -1,0 +1,11 @@
+# dsh-archive-cleanup bundle patch: inserts this plugin's row into the profile
+# roster. Applied as a profile bundle layer (the `dsh.bundle.patch` manifest
+# field) over dsh-base/dsh-web-app.
+#
+# The host half (package `exports["."]`) runs in the host process and registers
+# the loopback scan/purge routes; the `dsh.client` declaration in package.json
+# loads the browser half (package `exports["./client"]`, served by the harness
+# at /plugins/dsh-archive-cleanup/client.js) inside the Web GUI.
+- insert:
+    - id: archive-cleanup
+      name: 'dsh-archive-cleanup'

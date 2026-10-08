@@ -1,0 +1,58 @@
+{
+  "name": "dsh-archive-cleanup",
+  "version": "0.4.0",
+  "description": "One-click cleanup for archived DSH sessions. The host half lists the Workspace registry's archive set with on-disk sizes and permanently deletes a session's artifacts (JSONL log directory, projection-cache record) while releasing its archive/workspace accounting through the public registry API — all in the same request, with no harness restart. A session the Web process still holds gets its files reclaimed, its archive entry dropped, and its browser row removed immediately through the Host's own api-session/removed frame, and the Host's session-list read is then filtered for the ids this process removed, so a refresh, a reconnect, or a panel that pulls the list again (the Context Insights page does exactly that) cannot bring the row back. A session mid-turn is deferred to the idle edge the plugin observes. The browser half follows the live archive set, so a sidebar footer chip appears the moment a session is archived (hidden again at zero) and shows the exact count, plus a confirm dialog that closes on the host's answer, a result banner, and a settings page. Archived sessions are only ever removed on an explicit, confirmed request.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "platform": "web"
+    }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/smoke.mjs && node test/routes.mjs && node test/client.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "session",
+    "archive",
+    "cleanup",
+    "web-ui"
+  ],
+  "license": "MIT",
+  "author": "DengBr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DengBr/dsh-archive-cleanup.git"
+  },
+  "homepage": "https://github.com/DengBr/dsh-archive-cleanup#readme",
+  "bugs": {
+    "url": "https://github.com/DengBr/dsh-archive-cleanup/issues"
+  },
+  "engines": {
+    "node": ">=22.19",
+    "dsh": ">=0.2.0-rc.1 <0.3.0-0"
+  }
+}
